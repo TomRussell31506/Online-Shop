@@ -1,2 +1,18 @@
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Cheese Shop{% endblock %}
+
+{% block navbar %}
+<nav class="navbar">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url_for('galleryPage') }}">The Cheese Shop</a>
+    <a class="nav-link text-white" href="{{ url_for('basketPage') }}">View Basket</a>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+</div>
+{% endblock %}

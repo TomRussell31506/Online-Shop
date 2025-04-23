@@ -9,7 +9,7 @@ bootstrap = Bootstrap(app)
 app.config['SECRET_KEY'] = "top secret password don't tell anyone this"
 
 class QuantityForm(FlaskForm):
-    opinion = IntegerField('How many to add to basket: ',validators = [DataRequired(),NumberRange(0,50)])
+    quantity = IntegerField('How many to add to basket: ',validators = [DataRequired(),NumberRange(0,50)])
     submit = SubmitField('Submit')
 
 cheeses = [
