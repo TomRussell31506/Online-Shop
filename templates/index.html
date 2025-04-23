@@ -2,9 +2,10 @@
 
 {% block content %}
     <h1>Online Cheese Shop</h1>
+    <a href="{{ url_for('basketPage') }}">View Basket</a>
     <ul>
         {% for cheese in cheeses %}
-            <li><a href="http://127.0.0.1:5000/cheese/{{ cheese.id }}">{{ cheese.name }} - {{ cheese.price }}</a></li>
+            <li><a href="http://127.0.0.1:5000/cheese/{{ cheese.id }}">{{ cheese.name }} - {{ cheese.impact }} - {{ cheese.price }}</a></li>
             <img src = "/static/{{ cheese.name }}.jpg" alt = "An image of {{ cheese.name }}."
                 style = "max-height: 200px; max-width: 400px;" >
         {% endfor %}

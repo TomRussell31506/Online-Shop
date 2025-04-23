@@ -33,6 +33,9 @@ def singleProductPage(cheeseId):
     else:
         return render_template('SingleCheese.html', cheeses = cheeses[cheeseId], form = form)
     
+@app.route('/basket')
+def basketPage():
+    return render_template('basket.html', cheeses = cheeses)
 
 if __name__ == '__main__':
     app.run(debug=True)
