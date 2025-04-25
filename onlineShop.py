@@ -10,7 +10,7 @@ app.config['SECRET_KEY'] = "top secret password don't tell anyone this"
 
 class QuantityForm(FlaskForm):
     quantity = IntegerField('How many to add to basket: ',validators = [DataRequired(),NumberRange(0,50)])
-    submit = SubmitField('Submit')
+    submit = SubmitField('Add to basket!')
 
 cheeses = [
     { "name": "Cheddar", "price": "£4/kg", "description": "Cheddar is a popular, firm cheese originating from Cheddar, England.", "id":"0" , "impact":"10kg carbon emissions"},

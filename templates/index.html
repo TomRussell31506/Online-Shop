@@ -6,7 +6,7 @@
         {% for cheese in cheeses %}
             <li><a href="{{ url_for('singleProductPage', cheeseId=cheese.id) }}">{{ cheese.name }} - {{ cheese.impact }} - {{ cheese.price }}</a></li>
             <img src = "/static/{{ cheese.name }}.jpg" alt = "An image of {{ cheese.name }}."
-                style = "max-height: 200px; max-width: 400px;" >
+                style = "max-height: 100px; max-width: 200px;" >
         {% endfor %}
     </ul>
 {% endblock %}
