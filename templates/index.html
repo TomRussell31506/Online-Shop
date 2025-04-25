@@ -1,13 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Products</h1>
-    <ul>
-        {% for cheese in cheeses %}
-            <li><a href="{{ url_for('singleProductPage', cheeseId=cheese.id) }}">{{ cheese.name }} - {{ cheese.impact }} - {{ cheese.price }}</a></li>
-            <img src = "/static/{{ cheese.name }}.jpg" alt = "An image of {{ cheese.name }}."
-                style = "max-height: 100px; max-width: 200px;" >
-        {% endfor %}
-    </ul>
+    <div style="margin-left: 10px;">
+        <h1>Products</h1>
+        <ul>
+            {% for cheese in cheeses %}
+                <li><a href="{{ url_for('singleProductPage', cheeseId=cheese.id) }}">{{ cheese.name }} - {{ cheese.impact }} - {{ cheese.price }}</a></li>
+                <img src = "/static/{{ cheese.name }}.jpg" alt = "An image of {{ cheese.name }}."
+                    style = "max-height: 100px; max-width: 200px;" >
+            {% endfor %}
+        </ul>  
+    </div>
 {% endblock %}
 
