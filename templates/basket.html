@@ -2,6 +2,35 @@
 
 {% block content %}
 <div style="margin-left: 10px;">
-    <h1> BASKET PLACE HOLDER</h1>
+    <h1>Your Basket</h1>
+
+    {% if selected_cheeses %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cheese in selected_cheeses %}
+                    <tr>
+                        <td>{{ cheese.name }}</td>
+                        <td>{{ cheese.price }}</td>
+                        <td>{{ cheese.quantity }}kg</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Your basket is empty.</p>
+    {% endif %}
+
+    <div style="margin-top: 20px;">
+        <h4>Total Cost: £{{ total_price }}</h4>
+        <h4>Total Carbon Impact: {{ total_impact }}kg</h4>
+    </div>
+
 </div>
 {% endblock %}
