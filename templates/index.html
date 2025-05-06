@@ -3,13 +3,18 @@
 {% block content %}
     <div style="margin-left: 10px;">
         <h1>Products</h1>
+        <div class="col-md-2">
+            {{ wtf.quick_form(form) }}
+        </div>
+        <div class="col-md-10">
         <ul>
             {% for cheese in cheeses %}
-                <li><a href="{{ url_for('singleProductPage', cheeseId=cheese.id) }}">{{ cheese.name }} - {{ cheese.impact }} - {{ cheese.price }}</a></li>
+                <li><a href="{{ url_for('singleProductPage', cheeseId=cheese.id) }}">{{ cheese.name }} - {{ cheese.impact }}kg carbon emissions/kg - £{{ cheese.price }}/kg</a></li>
                 <img src = "/static/{{ cheese.name }}.jpg" alt = "An image of {{ cheese.name }}."
                     style = "max-height: 100px; max-width: 200px;" >
             {% endfor %}
         </ul>  
+        </div>
     </div>
 {% endblock %}
 

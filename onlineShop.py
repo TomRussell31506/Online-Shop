@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, abort, session
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, IntegerField
+from wtforms import StringField, SubmitField, IntegerField, SelectField
 from wtforms.validators import DataRequired, Length, NumberRange
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
@@ -23,17 +23,73 @@ class QuantityForm(FlaskForm):
     quantity = IntegerField('How many to add to basket: ',validators = [DataRequired(),NumberRange(0,50)])
     submit = SubmitField('Add to basket!')
 
-@app.route('/')
+class SortForm(FlaskForm):
+    order = SelectField("Sort by:", choices=[
+        ("name","Name"),
+        ("price","Price"),
+        ("impact","Environmental Impact")
+    ])
+    submit = SubmitField('Update')
+
+def get_object_with_attribute(attribute_value, attribute_name, object_list):
+
+    for item in object_list:
+        if getattr(item, attribute_name) == str(attribute_value):
+            return item
+        
+
+@app.route('/', methods = ["GET", "POST"])
 def galleryPage():
     cheeses = Cheeses.query.all()
-    return render_template('index.html',cheeses = cheeses)
+
+    list_cheese_names = []
+    for cheese in cheeses:
+        list_cheese_names.append(cheese.name)
+    
+    list_cheese_prices = []
+    for cheese in cheeses:
+        list_cheese_prices.append(cheese.price)
+    for i in range(0, len(list_cheese_prices)):
+        list_cheese_prices[i] = int(list_cheese_prices[i])
+
+    list_cheese_impacts = []
+    for cheese in cheeses:
+        list_cheese_impacts.append(cheese.impact)
+    for i in range(0, len(list_cheese_impacts)):
+        list_cheese_impacts[i] = int(list_cheese_impacts[i])
+
+    # Sort the cheeses according to the output of the sort form, default to sort by name
+    form = SortForm()
+    ordered_cheeses = []
+    if form.validate_on_submit():
+        chosen_order = form.order.data
+        if chosen_order == "name":
+            list_cheese_names.sort()
+            for cheese in list_cheese_names:
+                ordered_cheeses.append(get_object_with_attribute(cheese, "name", cheeses))
+        elif chosen_order == "price":
+            list_cheese_prices.sort()
+            for cheese in list_cheese_prices:
+                ordered_cheeses.append(get_object_with_attribute(cheese, "price", cheeses))
+        elif chosen_order == "impact":
+            print(list_cheese_impacts)
+            list_cheese_impacts.sort()
+            print(list_cheese_impacts)
+            for cheese in list_cheese_impacts:
+                ordered_cheeses.append(get_object_with_attribute(cheese, "impact", cheeses))
+    else:
+        list_cheese_names.sort()
+        for cheese in list_cheese_names:
+            ordered_cheeses.append(get_object_with_attribute(cheese, "name", cheeses))
+    
+    return render_template('index.html',cheeses = ordered_cheeses, form = form)
 
 @app.route('/cheese/<int:cheeseId>', methods = ["GET", "POST"])
 def singleProductPage(cheeseId):
     cheeses = Cheeses.query.all()
 
     # Do a flask abort if incorrect url
-    if cheeseId < 0 or cheeseId >= len(cheeses):
+    if cheeseId < 0 or cheeseId > len(cheeses):
         abort(404)
 
     # Initialise the session if no items in basket
@@ -45,7 +101,7 @@ def singleProductPage(cheeseId):
     form = QuantityForm()
     if form.validate_on_submit():
         quantity = form.quantity.data  
-        session['basket'].append({'id': cheeseId-1, 'quantity': quantity})
+        session['basket'].append({'id': cheeseId-1 , 'quantity': quantity})
         session.modified = True
 
         return render_template('SingleCheeseBasket.html', cheeses = cheeses[cheeseId-1])
@@ -78,5 +134,8 @@ def basketPage():
 
     return render_template('basket.html', selected_cheeses=selected_cheeses, total_impact=total_impact, total_price=total_price)
 
+@app.route('/payment')
+def paymentPage():
+    return render_template('payment.html')
 if __name__ == '__main__':
     app.run(debug=True)
