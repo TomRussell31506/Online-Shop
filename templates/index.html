@@ -10,8 +10,10 @@
         <ul>
             {% for cheese in cheeses %}
                 <li><a href="{{ url_for('singleProductPage', cheeseId=cheese.id) }}">{{ cheese.name }} - {{ cheese.impact }}kg carbon emissions/kg - £{{ cheese.price }}/kg</a></li>
-                <img src = "/static/{{ cheese.name }}.jpg" alt = "An image of {{ cheese.name }}."
-                    style = "max-height: 100px; max-width: 200px;" >
+                <a href="{{ url_for('singleProductPage', cheeseId=cheese.id) }}">
+                    <img src = "/static/{{ cheese.name }}.jpg" alt = "An image of {{ cheese.name }}."
+                        style = "max-height: 100px; max-width: 200px;" >
+                </a>
             {% endfor %}
         </ul>  
         </div>

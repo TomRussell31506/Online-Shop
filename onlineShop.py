@@ -7,12 +7,12 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
-app.config['SECRET_KEY'] = "top secret password don't tell anyone this"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.sqlite3'
+app.config["SECRET_KEY"] = "top secret password don't tell anyone this"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.sqlite3"
 db = SQLAlchemy(app)
 
 class Cheeses(db.Model):
-    __tablename__ = 'cheeses'
+    __tablename__ = "cheeses"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(16), index=True, unique=True)
     price = db.Column(db.String(8))
@@ -20,8 +20,8 @@ class Cheeses(db.Model):
     impact = db.Column(db.String(32))
 
 class QuantityForm(FlaskForm):
-    quantity = IntegerField('How many to add to basket: ',validators = [DataRequired(),NumberRange(0,50)])
-    submit = SubmitField('Add to basket!')
+    quantity = IntegerField("How many to add to basket: ",validators = [DataRequired(),NumberRange(0,50)])
+    submit = SubmitField("Add to basket!")
 
 class SortForm(FlaskForm):
     order = SelectField("Sort by:", choices=[
@@ -29,7 +29,14 @@ class SortForm(FlaskForm):
         ("price","Price"),
         ("impact","Environmental Impact")
     ])
-    submit = SubmitField('Update')
+    submit = SubmitField("Update")
+
+class paymentForm(FlaskForm):
+    card_num = StringField("Card Number:", validators = [DataRequired(), Length(min=16, max=16)])
+    cvc = StringField("CVC:", validators = [DataRequired(), Length(min=3, max=3)])
+    expiry_date = StringField("Expiry date (MM/YY):", validators = [DataRequired(), Length(min=5,max=5)])
+    name_on_card = StringField("Name on card:", validators = [DataRequired()])
+    submit = SubmitField("Purchase")
 
 def get_object_with_attribute(attribute_value, attribute_name, object_list):
 
@@ -38,7 +45,7 @@ def get_object_with_attribute(attribute_value, attribute_name, object_list):
             return item
         
 
-@app.route('/', methods = ["GET", "POST"])
+@app.route("/", methods = ["GET", "POST"])
 def galleryPage():
     cheeses = Cheeses.query.all()
 
@@ -84,7 +91,7 @@ def galleryPage():
     
     return render_template('index.html',cheeses = ordered_cheeses, form = form)
 
-@app.route('/cheese/<int:cheeseId>', methods = ["GET", "POST"])
+@app.route("/cheese/<int:cheeseId>", methods = ["GET", "POST"])
 def singleProductPage(cheeseId):
     cheeses = Cheeses.query.all()
 
@@ -93,25 +100,25 @@ def singleProductPage(cheeseId):
         abort(404)
 
     # Initialise the session if no items in basket
-    if 'basket' not in session:
+    if "basket" not in session:
         print("New session",flush=True)
-        session['basket'] = []
+        session["basket"] = []
     
     # Store the cheeseID and quantity in the session
     form = QuantityForm()
     if form.validate_on_submit():
         quantity = form.quantity.data  
-        session['basket'].append({'id': cheeseId-1 , 'quantity': quantity})
+        session["basket"].append({"id": cheeseId-1 , "quantity": quantity})
         session.modified = True
 
-        return render_template('SingleCheeseBasket.html', cheeses = cheeses[cheeseId-1])
+        return render_template("SingleCheeseBasket.html", cheeses = cheeses[cheeseId-1])
     else:
-        return render_template('SingleCheese.html', cheeses = cheeses[cheeseId-1], form=form)
+        return render_template("SingleCheese.html", cheeses = cheeses[cheeseId-1], form=form)
     
-@app.route('/basket')
+@app.route("/basket")
 def basketPage():
     cheeses = Cheeses.query.all()
-    basket = session.get('basket', [])
+    basket = session.get("basket", [])
 
     # Turns the useful information into a seperate list of dicts
     # and sum totals
@@ -120,22 +127,26 @@ def basketPage():
     total_impact = 0.0
 
     for item in basket:
-        cheese = cheeses[item['id']]
-        quantity = item['quantity']
-        price_per_kg = float(cheese.price.replace('£', '').replace('/kg', ''))
-        impact_per_kg = float(cheese.impact.replace('kg carbon emissions', ''))
+        cheese = cheeses[item["id"]]
+        quantity = item["quantity"]
+        price_per_kg = float(cheese.price)
+        impact_per_kg = float(cheese.impact)
         selected_cheeses.append({
-            'name': cheese.name,
-            'price': cheese.price,
-            'quantity': item['quantity']
+            "name": cheese.name,
+            "price": cheese.price,
+            "quantity": item["quantity"]
         })
         total_price += price_per_kg * quantity
         total_impact += impact_per_kg * quantity
 
-    return render_template('basket.html', selected_cheeses=selected_cheeses, total_impact=total_impact, total_price=total_price)
+    return render_template("basket.html", selected_cheeses=selected_cheeses, total_impact=total_impact, total_price=total_price)
 
-@app.route('/payment')
+@app.route("/payment")
 def paymentPage():
-    return render_template('payment.html')
+
+    form = paymentForm()
+    return render_template("payment.html", form = form)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
