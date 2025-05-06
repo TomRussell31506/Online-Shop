@@ -23,17 +23,17 @@
                 {% endfor %}
             </tbody>
         </table>
+        <div style="margin-top: 20px;">
+            <h4>Total Cost: £{{ total_price }}</h4>
+            <h4>Total Carbon Impact: {{ total_impact }}kg</h4>
+        </div>
+    
+        <div>
+            <a href="{{ url_for('paymentPage') }}">Proceed to payment</a>
+        </div>
     {% else %}
         <p>Your basket is empty.</p>
     {% endif %}
-
-    <div style="margin-top: 20px;">
-        <h4>Total Cost: £{{ total_price }}</h4>
-        <h4>Total Carbon Impact: {{ total_impact }}kg</h4>
-    </div>
-    <div>
-        <a href="{{ url_for('paymentPage') }}">Proceed to payment</a>
-    </div>
 
 </div>
 {% endblock %}

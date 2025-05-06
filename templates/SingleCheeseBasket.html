@@ -3,9 +3,7 @@
 {% block content %}
 <div style="margin-left: 10px;">
     <h1>{{ cheeses.name }}</h1>
-    <p>{{ cheeses.price }}</p>
-    <p>{{ cheeses.description }}</p>
     <p>Items added to basket!</p>
-    <img src="/static/{{ cheeses.name }}.jpg" alt="An image of {{ cheeses.name }}" style="max-height: 400px; max-width: 600px;">
+    <a href="{{url_for('galleryPage')}}">Return Home</a>
 </div>
 {% endblock %}

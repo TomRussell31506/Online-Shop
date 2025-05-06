@@ -38,6 +38,9 @@ class paymentForm(FlaskForm):
     name_on_card = StringField("Name on card:", validators = [DataRequired()])
     submit = SubmitField("Purchase")
 
+class removeButton(FlaskForm):
+    submit = SubmitField("Remove")
+
 def get_object_with_attribute(attribute_value, attribute_name, object_list):
 
     for item in object_list:
@@ -120,8 +123,7 @@ def basketPage():
     cheeses = Cheeses.query.all()
     basket = session.get("basket", [])
 
-    # Turns the useful information into a seperate list of dicts
-    # and sum totals
+    # Turns the useful information into a seperate list of dicts and sums totals
     selected_cheeses = []
     total_price = 0.0
     total_impact = 0.0
@@ -141,11 +143,15 @@ def basketPage():
 
     return render_template("basket.html", selected_cheeses=selected_cheeses, total_impact=total_impact, total_price=total_price)
 
-@app.route("/payment")
+@app.route("/payment", methods = ["GET", "POST"])
 def paymentPage():
 
     form = paymentForm()
-    return render_template("payment.html", form = form)
+    if form.validate_on_submit():
+        session.pop("basket", None)     # Clear the basket after user has 'payed' for it
+        return render_template("submittedPayment.html")
+    else:
+        return render_template("payment.html", form = form)
 
 
 if __name__ == '__main__':
