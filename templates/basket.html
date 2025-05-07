@@ -17,8 +17,15 @@
                 {% for cheese in selected_cheeses %}
                     <tr>
                         <td>{{ cheese.name }}</td>
-                        <td>{{ cheese.price }}</td>
+                        <td>£{{ cheese.price }}/kg</td>
                         <td>{{ cheese.quantity }}kg</td>
+                        <td>
+                            <form method="post"
+                                  action="{{ url_for('remove_from_basket', cheese_id=cheese.id) }}">
+                              {{ remove_form.hidden_tag() }}
+                              {{ remove_form.submit(class="btn btn-sm btn-danger") }}
+                            </form>
+                          </td>
                     </tr>
                 {% endfor %}
             </tbody>

@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, abort, session
+from flask import Flask, render_template, request, abort, session, redirect, url_for
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, IntegerField, SelectField
 from wtforms.validators import DataRequired, Length, NumberRange
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
+import random
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
@@ -38,7 +39,7 @@ class paymentForm(FlaskForm):
     name_on_card = StringField("Name on card:", validators = [DataRequired()])
     submit = SubmitField("Purchase")
 
-class removeButton(FlaskForm):
+class removeForm(FlaskForm):
     submit = SubmitField("Remove")
 
 def get_object_with_attribute(attribute_value, attribute_name, object_list):
@@ -134,6 +135,7 @@ def basketPage():
         price_per_kg = float(cheese.price)
         impact_per_kg = float(cheese.impact)
         selected_cheeses.append({
+            "id": cheese.id,
             "name": cheese.name,
             "price": cheese.price,
             "quantity": item["quantity"]
@@ -141,15 +143,38 @@ def basketPage():
         total_price += price_per_kg * quantity
         total_impact += impact_per_kg * quantity
 
-    return render_template("basket.html", selected_cheeses=selected_cheeses, total_impact=total_impact, total_price=total_price)
+    remove_form = removeForm()
+
+    return render_template("basket.html", selected_cheeses=selected_cheeses, total_impact=total_impact, total_price=total_price
+                           , remove_form = remove_form)
+
+@app.route("/basket/remove/<int:cheese_id>", methods=["POST"])
+def remove_from_basket(cheese_id):
+    form = removeForm()
+    if form.validate_on_submit():
+        basket = session.get("basket", [])
+        stored_index = cheese_id - 1
+
+        # find and pop the first match
+        for i, item in enumerate(basket):
+            if item.get("id") == stored_index:
+                basket.pop(i)
+                break
+
+        session["basket"] = basket
+        session.modified = True
+
+    return redirect(url_for("basketPage"))
 
 @app.route("/payment", methods = ["GET", "POST"])
 def paymentPage():
 
+    order_number = random.randint(1000, 9999)
+
     form = paymentForm()
     if form.validate_on_submit():
         session.pop("basket", None)     # Clear the basket after user has 'payed' for it
-        return render_template("submittedPayment.html")
+        return render_template("submittedPayment.html", order_number = order_number)
     else:
         return render_template("payment.html", form = form)
 
